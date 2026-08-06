@@ -475,11 +475,17 @@ export interface DbJob {
   priority: number;
   /** When it was due to run */
   run_at: Date;
-  /** How many times it has been attempted */
+  /**
+   * The number of attempts made so far, including any attempt currently in
+   * progress. Incremented atomically each time the job is locked for execution,
+   * so during a running handler this counts the in-flight attempt:
+   * `attempts === 1` on the first run and `attempts === max_attempts` on the
+   * final run.
+   */
   attempts: number;
   /** The limit for the number of times it should be attempted */
   max_attempts: number;
-  /** If attempts > 0, why did it fail last? */
+  /** The error message from the previous failed attempt, if any (null on the first run). */
   last_error: string | null;
   created_at: Date;
   updated_at: Date;
